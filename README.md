@@ -1,4 +1,4 @@
-# PowerShell scripts for Azure security oversight  
+# PowerShell scripts for Azure security monitoring and oversight  
 
 1. List all role assignments for a user access audit
 2. [List all Azure Databricks workspaces](../main/list_all_databricks_workspaces.ps1)
