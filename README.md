@@ -10,3 +10,6 @@
 6. [Audit Azure Service Principal permissions](../main/auditSPNpermission.ps1)
 7. [Monitor Azure service principal secret expiration for specified future duration](../main/monitorSPNsecretExpiration.ps1)
 8. [Monitor Azure SPN activities for secret access](../main/monitorSPNactivityLogs.ps1)
+
+## Azure DevOps
+1. [Get list of Azure DevOps pipelines in a project](/getProjectPipelines.ps1) - Update myorg, myproj and PAT with real values before running the script.
