@@ -13,3 +13,4 @@
 
 ## Azure DevOps
 1. [Get list of Azure DevOps pipelines in a project](/getProjectPipelines.ps1) - Update myorg, myproj and PAT with real values before running the script.
+2. [Get list of Azure DevOps folders in a project](/getAzDevOpsFolders.ps1) - Gets both Build/YAML and Classic Release folders exported to a CSV.
