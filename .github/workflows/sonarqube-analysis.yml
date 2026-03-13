@@ -23,5 +23,5 @@ jobs:
       with:
         args: >
           -Dsonar.verbose=true
-          -Dsonar.projectKey=your-project-key
-          -Dsonar.organization=your-organization
+          -Dsonar.projectKey=maloymanna_azure-security-powershell
+          -Dsonar.organization=maloymanna
