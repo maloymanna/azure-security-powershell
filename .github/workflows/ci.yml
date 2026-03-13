@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  sonarqube:
+  build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repo
@@ -33,11 +33,7 @@ jobs:
     - name: Run Pester tests
       shell: pwsh
       run: |
-        Invoke-Pester `
-          -Path ./tests `
-          -OutputFormat NUnitXml `
-          -OutputFile test-results.xml `
-          -PassThru
+        Invoke-Pester ./tests
   
     - name: SonarQube Scan
       uses: sonarsource/sonarqube-scan-action@v7 # See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
