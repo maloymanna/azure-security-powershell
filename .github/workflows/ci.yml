@@ -23,7 +23,6 @@ jobs:
 
     - name: Install modules
       shell: pwsh
-      uses: actions/setup-pwsh@v2
       run: |
         Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
         Install-Module Pester -Force -SkipPublisherCheck -Scope CurrentUser      
