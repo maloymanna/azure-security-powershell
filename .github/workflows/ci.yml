@@ -1,0 +1,60 @@
+name: PowerShell CI
+
+on:
+  # Trigger analysis when pushing to your main branches, and when creating a pull request.
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  sonarqube:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v6
+      with:
+        # Disabling shallow clones is recommended for improving the relevancy of reporting
+        fetch-depth: 0
+
+    - name: Setup PowerShell
+      uses: actions/setup-pwsh@v2
+
+    - name: Install modules
+      shell: pwsh
+      uses: actions/setup-pwsh@v2
+      run: |
+        Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
+        Install-Module Pester -Force -SkipPublisherCheck -Scope CurrentUser      
+
+    - name: Run PSScriptAnalyzer
+      shell: pwsh
+      run: |
+        $results = Invoke-ScriptAnalyzer -Path ./scripts -Recurse
+        $results | ConvertTo-Json -Depth 5 | Out-File psscriptanalyzer-report.json
+
+    - name: Run Pester tests
+      shell: pwsh
+      run: |
+        Invoke-Pester `
+          -Path ./tests `
+          -OutputFormat NUnitXml `
+          -OutputFile test-results.xml `
+          -PassThru
+  
+    - name: SonarQube Scan
+      uses: sonarsource/sonarqube-scan-action@v7 # See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+      with:
+        args: >
+          -Dsonar.verbose=true
+          -Dsonar.projectKey=maloymanna_azure-security-powershell
+          -Dsonar.organization=maloymanna
+
+    - name: Sonar Quality Gate
+      uses: SonarSource/sonarqube-quality-gate-action@v1
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
