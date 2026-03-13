@@ -1,5 +1,5 @@
 BeforeAll {
-    . "$PSScriptRoot/findRGownerSPNs.ps1"
+    . "$PSScriptRoot/../findRGownerSPNs.ps1"
 }
 
 Describe "SPN Owner role detection" {
