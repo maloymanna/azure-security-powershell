@@ -1,4 +1,5 @@
 # PowerShell scripts for Azure security monitoring and oversight  
+![CI](https://github.com/maloymanna/azure-security-powershell/actions/workflows/ci.yml/badge.svg)  [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=maloymanna_azure-security-powershell&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=maloymanna_azure-security-powershell)
 
 1. List all role assignments for a user access audit
 2. [List all Azure Databricks workspaces](../main/list_all_databricks_workspaces.ps1)
