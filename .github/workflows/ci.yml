@@ -27,9 +27,28 @@ jobs:
     - name: Run PSScriptAnalyzer
       shell: pwsh
       run: |
-        $results = Invoke-ScriptAnalyzer -Path . -Recurse -Severity Warning -Format Json 
-        $wrapped = @{ issues = $results } 
-        $wrapped | ConvertTo-Json -Depth 5 | Out-File psscriptanalyzer-report.json -Encoding utf8
+        $results = Invoke-ScriptAnalyzer -Path . -Recurse -Severity Warning
+        # Convert PowerShell objects returned to JSON object
+        $issues = foreach ($r in $results) {
+            @{
+                engineId = "PSScriptAnalyzer"
+                ruleId   = $r.RuleName
+                severity = "MAJOR"
+                type     = "CODE_SMELL"
+                primaryLocation = @{
+                    message = $r.Message
+                    filePath = $r.ScriptPath
+                    textRange = @{
+                        startLine = $r.Line
+                        endLine   = $r.Line
+                    }
+                }
+            }
+        }
+        $wrapped = @{
+            issues = $issues
+        }
+        $wrapped | ConvertTo-Json -Depth 10 | Out-File psscriptanalyzer-report.json -Encoding utf8        
 
     - name: Run Pester tests
       shell: pwsh
