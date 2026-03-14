@@ -1,35 +1,32 @@
 # Find SPNs with Owner role on Resource Groups
-Connect-AzAccount
+function Get-HighRiskSpnAssignments {
+    $assignments = Get-AzRoleAssignment | Where-Object {
+        $_.RoleDefinitionName -eq "Owner" -and
+        $_.ObjectType -eq "ServicePrincipal" -and
+        $_.Scope -like "*/resourceGroups/*"
+    }
 
-$highRiskAssignments = Get-AzRoleAssignment | Where-Object {
-    $_.RoleDefinitionName -eq "Owner" -and
-    $_.ObjectType -eq "ServicePrincipal" -and
-    $_.Scope -like "*/resourceGroups/*"
+    # Ensure we return an array (empty array instead of $null)
+    return ,$assignments
 }
 
-if ($highRiskAssignments.Count -gt 0) {
-    Write-Warning "Found $($highRiskAssignments.Count) SPNs with Owner role on Resource Groups:"
-    $highRiskAssignments | Select-Object DisplayName, RoleDefinitionName, Scope, ObjectId | Format-Table -AutoSize
-} else {
-    Write-Host "No SPNs found with Owner role on Resource Groups." -ForegroundColor Green
-}
+function Main {
+    # Connect to Azure
+    Connect-AzAccount
 
-# Also check for secrets expiring in > 90 days
-$longLivedSecrets = foreach ($sp in Get-AzADServicePrincipal) {
-    $creds = Get-AzADSpCredential -ObjectId $sp.Id -ErrorAction SilentlyContinue
-    foreach ($cred in $creds) {
-        if ($cred.EndDate - (Get-Date) -gt (New-TimeSpan -Days 90)) {
-            [PSCustomObject]@{
-                SPNDisplayName = $sp.DisplayName
-                KeyId          = $cred.KeyId
-                EndDate        = $cred.EndDate
-                DaysUntilExpiry = ($cred.EndDate - (Get-Date)).Days
-            }
-        }
+    # Call function to get high-risk SPNs
+    $highRiskAssignments = Get-HighRiskSpnAssignments
+
+    # Process the result
+    if ($highRiskAssignments.Count -gt 0) {
+        Write-Warning "Found $($highRiskAssignments.Count) SPNs with Owner role on Resource Groups:"
+        $highRiskAssignments | Select-Object DisplayName, RoleDefinitionName, Scope, ObjectId | Format-Table -AutoSize
+    } else {
+        Write-Host "No SPNs found with Owner role on Resource Groups." -ForegroundColor Green
     }
 }
 
-if ($longLivedSecrets.Count -gt 0) {
-    Write-Warning "Found $($longLivedSecrets.Count) SPN secrets with >90 days validity:"
-    $longLivedSecrets | Sort-Object DaysUntilExpiry -Descending | Format-Table -AutoSize
+# Only run when the script is executed directly
+if ($MyInvocation.InvocationName -ne '.') {
+    Main
 }
