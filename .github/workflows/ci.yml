@@ -67,7 +67,8 @@ jobs:
       run: ls -la
   
     - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@v7 # See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
+      uses: sonarsource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9 
+      # Using full SHA for latest v7
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
@@ -78,6 +79,7 @@ jobs:
           -Dsonar.organization=maloymanna
 
     - name: Sonar Quality Gate
-      uses: SonarSource/sonarqube-quality-gate-action@v1
+      uses: SonarSource/sonarqube-quality-gate-action@cf038b0e0cdecfa9e56c198bbb7d21d751d62c3b
+      # Using full SHA for latest v1.2
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
