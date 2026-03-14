@@ -27,7 +27,11 @@ jobs:
     - name: Run PSScriptAnalyzer
       shell: pwsh
       run: |
-        $results = Invoke-ScriptAnalyzer -Path . -Recurse -OutputFormat SonarQube -OutFile psscriptanalyzer-report.json
+        echo "Getting PSScriptAnalyzer version ..."
+        Get-Module PSScriptAnalyzer
+        $results = Invoke-ScriptAnalyzer -Path . -Recurse -Severity Warning -Format Json # array of results
+        $wrapped = @{ issues = $results } # object with a key pointing to array
+        $wrapped | ConvertTo-Json -Depth 5 | Out-File psscriptanalyzer-report.json -Encoding utf8 # Sonarqube compatible json object
 
     - name: Run Pester tests
       shell: pwsh
