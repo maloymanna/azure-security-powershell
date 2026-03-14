@@ -53,10 +53,18 @@ jobs:
     - name: Run Pester tests
       shell: pwsh
       run: |
-        Invoke-Pester `
-          -Path tests `
-          -OutputFormat NUnitXml `
-          -OutputFile test-results.xml
+        $config = New-PesterConfiguration
+        $config.Run.Path = "tests"
+        $config.Run.Exit = $true
+        
+        $config.TestResult.Enabled = $true
+        $config.TestResult.OutputFormat = "NUnitXml"
+        $config.TestResult.OutputPath = "test-results.xml"
+        
+        Invoke-Pester -Configuration $config
+
+    - name: Sanity Check
+      run: ls -la
   
     - name: SonarQube Scan
       uses: sonarsource/sonarqube-scan-action@v7 # See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
